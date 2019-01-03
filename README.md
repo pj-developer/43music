@@ -1,2 +1,2 @@
 # 43music
-music player
+wechat miniprogram music player
