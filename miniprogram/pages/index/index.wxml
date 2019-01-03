@@ -1,0 +1,76 @@
+<!--index.wxml-->
+<view class="container">
+  <!-- 歌曲信息 -->
+  <view class='music-header'>
+    <view class='music-msg-container'>
+      <view class='music-name-container'>
+        <!-- <view animation="{{ scrollAnimationData }}"> -->
+        <view style="transform: translateX({{ -marqueeDistance }}px)">
+          <text class='music-name'>{{ currentMusic.name }}</text>
+        </view>
+      </view>
+      <text class='music-singer'>{{ currentMusic.singer }}</text>
+    </view>
+  </view>
+
+  <!-- 歌词部分 -->
+  <view class="lrc-container" bindtap='showLrc'>
+    <!-- <view style='position: absolute;z-index: 95;width:100%;text-align: center;'>
+      <image class='music-playrod' src='../../images/playRod.png' mode='widthFix'></image>
+    </view> -->
+    <view animation="{{ rotateAnimationData }}" class='cd-container' style="{{ loadLrc?'opacity: 0.3;':'' }}">
+      <image src='../../images/cd.png' mode='widthFix' style='position: absolute;z-index: 2;'></image>
+      <image src='{{ currentMusic.image?static + currentMusic.image:"../../images/musicbg.png" }}' style='width: 180px;height: 180px;'></image>
+    </view>
+    <view wx:if='{{ loadLrc }}' style='width: 100%;height: 50%;background: rgba(0, 0, 0, 0.1);position:absolute;z-index: 97;'></view>
+    <scroll-view id="lrcScrollContainer" scroll-y scroll-into-view="{{ toLrcView }}" scroll-with-animation="true" class='lrc-scroll-container' style="{{ loadLrc?'height: 50%;background: rgba(0, 0, 0, 0.1);':'height: 15%;background: rgba(0, 0, 0, 0);' }}">
+      <text id="{{ 'lrcTime' + item.time }}" wx:key="lrc" wx:for='{{ lyric }}' style='{{ selectedLrcText=="lrcTime"+item.time?"opacity: 1;":"" }}'>
+      {{ item.content }}
+      </text>
+      <view class="seize"></view>
+    </scroll-view>
+  </view>
+
+  <!-- 播放控件 -->
+  <view class="control-container">
+    <view class="progress-container">
+      <view class='time-container'>
+        <text class="start-time">{{startTime}}</text>
+        <text class="end-time">{{endTime}}</text>
+      </view>
+      <slider class='progress-bar' min="0" max="{{ musicDuration }}" value='{{ currentSecond }}' block-size='12' bindchange='seekMusic' bindchanging='seekMscChanging'/>
+    </view>
+    <view class='btn-container'>
+      <button class='control-btn order-btn' plain='true' bindtap='changePlayMode'>
+        <image src='../../images/{{ playModeImg }}' mode='widthFix'></image>
+      </button>
+      <button class='control-btn' plain='true' bindtap='preMusic'>
+        <image src='../../images/pre.png' mode='widthFix'></image>
+      </button>
+      <button class='control-btn' plain='true' bindtap='playMusic'>
+        <image src='{{ isPlaying?"../../images/play.png":"../../images/pause.png" }}' mode='widthFix'></image>
+      </button>
+      <button class='control-btn' plain='true' bindtap='nextMusic'>
+        <image src='../../images/next.png' mode='widthFix'></image>
+      </button>
+      <button class='control-btn msc-list-btn' plain='true' bindtap='showMusicList'>
+        <image src='../../images/list.png' mode='widthFix'></image>
+      </button>
+    </view>
+  </view>
+
+  <!-- 歌曲列表 -->
+  <view class='modal' wx:if="{{ showMscList }}" bindtap='hideMusicList'></view>
+  <view class='msc-list' wx:if="{{ showMscList }}" animation="{{ mscListAnimation }}">
+    <view class="msc-list-header">
+        <text>{{ playModeTitle }}{{showMscListLen ?'(' + musicList.length + ')' : '' }}</text>
+    </view>
+    <scroll-view class='msc-list-content' scroll-y>
+      <text wx:key="musicList" wx:for="{{ musicList }}" data-index='{{ index }}' bindtap='changeMusic' style='{{index!=0?"border-top:1px solid #cccccc;":""}}{{ musicListLen<9&&index==musicListLen-1?"border-bottom:1px solid #cccccc;":"" }}{{ currentMusicIndex==index?"color: #f00;":"" }}'>{{ item.name }}-{{ item.singer }}</text>
+    </scroll-view>
+    <view class="msc-list-foot" bindtap='hideMusicList'>
+        <text>关闭</text>
+    </view>
+  </view>
+
+</view>
